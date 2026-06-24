@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FICPRINTS — Cotizador 3D</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Config del envío (Formspree). Editar la URL en config.js. -->
+  <script src="config.js"></script>
+  <!-- Parseo del STL + constantes de cálculo (100% en el navegador). -->
+  <script src="js/stl.js"></script>
+  <!-- three.js (CDN) solo para el preview 3D — requiere internet. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div class="wrap cotizador">
+    <header class="cot-head">
+      <img class="logo" src="assets/ficprints-logo.png" alt="FICPRINTS">
+      <div>
+        <h1>Cotizador 3D</h1>
+        <p class="muted">Sube tu pieza y obtén un estimado al instante</p>
+      </div>
+    </header>
+
+    <!-- Barra de progreso -->
+    <div class="progress">
+      <div class="progress-label">Paso <span id="stepNum">1</span> de 4</div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-steps">
+        <span data-dot="1" class="on">Pieza</span>
+        <span data-dot="2">Especificaciones</span>
+        <span data-dot="3">Cálculo</span>
+        <span data-dot="4">Confirmar</span>
+      </div>
+    </div>
+
+    <!-- ===== Pantalla 1: subir STL + preview 3D ===== -->
+    <section class="screen" data-step="1">
+      <div class="block">
+        <h2>1 · Sube tu archivo STL</h2>
+        <p class="muted">El archivo se procesa en tu navegador — no se sube a ningún servidor.</p>
+        <div id="dropzone" class="dropzone">
+          <input type="file" id="file" accept=".stl" hidden>
+          <div class="dz-inner">
+            <div class="dz-icon">⬆</div>
+            <p><b>Arrastra tu .STL aquí</b> o haz clic para elegir</p>
+            <p class="muted" id="fileName">Ningún archivo cargado</p>
+          </div>
+        </div>
+        <div id="viewer" class="viewer" hidden></div>
+        <div id="meshInfo" class="meshinfo" hidden></div>
+      </div>
+    </section>
+
+    <!-- ===== Pantalla 2: especificaciones ===== -->
+    <section class="screen" data-step="2" hidden>
+      <div class="block">
+        <h2>2 · Especificaciones</h2>
+
+        <div class="field">
+          <label>Material</label>
+          <div class="chips" id="materialChips">
+            <button type="button" class="chip" data-val="PLA">PLA</button>
+            <button type="button" class="chip" data-val="TPU">TPU</button>
+            <button type="button" class="chip" data-val="PETG">PETG</button>
+            <button type="button" class="chip" data-val="ABS">ABS</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Color</label>
+          <div class="swatches" id="colorSwatches"></div>
+        </div>
+
+        <div class="field">
+          <label>Relleno: <span id="rellenoVal" class="lime">20%</span>
+            <span id="rellenoTag" class="muted"></span></label>
+          <input type="range" id="relleno" min="10" max="50" step="5" value="20" class="slider">
+          <div class="slider-ticks"><span>10% ligero</span><span>resistente</span><span>50% alta resistencia</span></div>
+        </div>
+
+        <div class="field">
+          <label>¿Necesita soportes?</label>
+          <div class="toggle" id="soportes">
+            <button type="button" data-val="no" class="on">No</button>
+            <button type="button" data-val="si">Sí</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Aplicación</label>
+          <div class="chips" id="aplicacionChips">
+            <button type="button" class="chip" data-val="Estético">Estético</button>
+            <button type="button" class="chip" data-val="Mecánico">Mecánico</button>
+            <button type="button" class="chip" data-val="Funcional">Funcional</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Pantalla 3: desglose ===== -->
+    <section class="screen" data-step="3" hidden>
+      <div class="block">
+        <h2>3 · Desglose del cálculo</h2>
+        <p class="aprox">Estimado aproximado · precio final sujeto a confirmación tras slicear en Bambu Studio (±15-20%).</p>
+        <div class="price-range" id="priceRange">$0 – $0</div>
+        <table class="data breakdown" id="breakdown"></table>
+      </div>
+    </section>
+
+    <!-- ===== Pantalla 4: confirmación + cliente ===== -->
+    <section class="screen" data-step="4" hidden>
+      <div class="block">
+        <h2>4 · Confirma y déjanos tus datos</h2>
+        <div id="soporteAviso" class="aviso" hidden></div>
+        <div class="resumen" id="resumen"></div>
+        <div class="field"><label>Tu nombre</label><input id="cliente" placeholder="Nombre del cliente"></div>
+        <div class="field"><label>Contacto (WhatsApp / correo)</label><input id="contacto" placeholder="Cómo te contactamos"></div>
+        <div class="field"><label>Descripción de la pieza</label><input id="pieza" placeholder="Ej. soporte de teléfono"></div>
+        <div id="enviarMsg" class="flash" hidden></div>
+      </div>
+    </section>
+
+    <!-- Navegación -->
+    <div class="cot-nav">
+      <button class="btn" id="btnBack" hidden>← Atrás</button>
+      <button class="btn primary" id="btnNext" disabled>Siguiente →</button>
+      <button class="btn primary" id="btnSend" hidden>Enviar cotización</button>
+    </div>
+  </div>
+
+  <script type="module" src="js/cotizador.js"></script>
+</body>
+</html>

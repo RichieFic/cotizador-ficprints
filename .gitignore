@@ -1,0 +1,26 @@
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores / IDEs
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs y temporales
+*.log
+.cache/
+
+# Red de seguridad: NUNCA publicar el sistema interno de FICPRINTS.
+# (Este repo es SOLO la calculadora estática; estos no viven aquí, pero por si
+#  algún día se copian por error a esta carpeta, quedan ignorados.)
+FICPRINTS_Tracker.xlsx
+pendientes.json
+CLAUDE.md
+PROGRESO.md
+dashboard/
+scripts/
+cotizaciones/
+build_tracker.py
