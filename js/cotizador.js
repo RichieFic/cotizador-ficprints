@@ -9,7 +9,7 @@ const C = window.FicStl.CONST;
 
 // 8 colores con su muestra real (Tornasol = gradiente iridiscente).
 const COLORS = [
-  ["Amarillo", "#F5D90A"], ["Blanco", "#EDEDED"], ["Verde", "#36C95B"],
+  ["Amarillo", "#F5D90A"], ["Naranja", "#F97316"], ["Blanco", "#EDEDED"], ["Verde", "#36C95B"],
   ["Rojo", "#E5484D"], ["Rosa", "#EC5BA6"], ["Azul", "#3B82F6"],
   ["Azul Celeste", "#48C6F0"], ["Tornasol", "iridescent"],
 ];
