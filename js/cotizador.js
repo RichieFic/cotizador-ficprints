@@ -11,7 +11,7 @@ const C = window.FicStl.CONST;
 const COLORS = [
   ["Amarillo", "#F5D90A"], ["Naranja", "#F97316"], ["Blanco", "#EDEDED"], ["Verde", "#36C95B"],
   ["Rojo", "#E5484D"], ["Rosa", "#EC5BA6"], ["Azul", "#3B82F6"],
-  ["Azul Celeste", "#48C6F0"], ["Tornasol", "iridescent"], ["Verde Silk", "#12A150"],
+  ["Azul Celeste", "#48C6F0"], ["Tornasol", "iridescent"], ["Verde Silk", "#12A150"], ["Negro", "#141416"],
 ];
 const IRIDESCENT = "linear-gradient(135deg,#ff6ec4,#7873f5,#4ade80,#facc15)";
 
